@@ -39,7 +39,7 @@ class ShipComponent(models.Model):
         abstract = True
 
 class Weapon(ShipComponent):
-    type = models.CharField(choice=WEAPON_TYPES, max_length=1)
+    type = models.CharField(choices=WEAPON_TYPES, max_length=1)
     min_damage = models.PositiveIntegerField()
     max_damage = models.PositiveIntegerField()
     cooling_time = models.PositiveIntegerField()
@@ -49,7 +49,7 @@ class Weapon(ShipComponent):
     space = models.PositiveIntegerField()
 
 class Armor(ShipComponent):
-    type = models.CharField(choice=ARMOR_TYPES, max_length=1)
+    type = models.CharField(choices=ARMOR_TYPES, max_length=1)
     
     damage_resistance = models.PositiveSmallIntegerField()
     hp_multiplier = models.DecimalField(max_digits=4, decimal_places=2)
@@ -67,12 +67,12 @@ class Shield(ShipComponent):
     level = models.PositiveSmallIntegerField()
 
 class ShipDesign(models.Model):
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, related_name='ship_designs')
     name = models.CharField(max_length=50)
     
     size = models.ForeignKey(ShipSize)
     armor = models.ForeignKey(Armor)
-    computer = models.Foreignkey(Computer)
+    computer = models.ForeignKey(Computer)
     engine = models.ForeignKey(Engine)
     shield = models.ForeignKey(Shield)
     
@@ -82,26 +82,26 @@ class ShipDesign(models.Model):
     def __unicode__(self):
         return self.name
 
-class CommandeAttribute(models.Model):
+class CommanderAttribute(models.Model):
     name = models.CharField(max_length=20, unique=True)
     races = models.ManyToManyField(Race)
 
     def __unicode__(self):
         return self.name
 
-class Commander(models.model):
-    player = models.ForeignKey(Player)
+class Commander(models.Model):
+    player = models.ForeignKey(Player, related_name='commanders')
     name = models.CharField(max_length=50)
     
-    level = models.PostiveSmallIntegerField()
+    level = models.PositiveSmallIntegerField()
     experience = models.PositiveIntegerField()
     fleet_commanding = models.PositiveIntegerField()
     efficiency = models.PositiveIntegerField()
     
-    offensive = models.SmallIntegerField()
-    defensive = models.SmallIntegerField()
-    maneuver = models.SmallintegerField()
-    detection = models.SmallIntegerField()
+    offensive = models.PositiveSmallIntegerField()
+    defensive = models.PositiveSmallIntegerField()
+    maneuver = models.PositiveSmallIntegerField()
+    detection = models.PositiveSmallIntegerField()
     
     armada_efficiency = models.SmallIntegerField()
     armada_offensive = models.SmallIntegerField()
@@ -114,11 +114,11 @@ class Commander(models.model):
 
 class Fleet(models.Model):
     name = models.CharField(max_length=30)
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, related_name='fleets')
     ship_design = models.ForeignKey(ShipDesign)
     experience = models.PositiveSmallIntegerField()
     ships = models.PositiveSmallIntegerField()
-    commander = models.ForeignKey(Commander)
+    commander = models.OneToOneField(Commander)
 
     @property
     def status(self):
@@ -136,3 +136,23 @@ class Fleet(models.Model):
     def __unicode__(self):
         return self.name
 
+class ShipDock(models.Model):
+    player = models.ForeignKey(Player)
+    ship_design = models.ForeignKey(ShipDesign)
+    ships = models.PositiveIntegerField()
+    
+    class Meta:
+        unique_together = [('player', 'ship_design')]
+
+class ShipBuildQue(models.Model):
+    player = models.ForeignKey(Player, related_name='shipbuildques')
+    ship_design = models.ForeignKey(ShipDesign)
+    ships = models.PositiveIntegerField()
+    order = models.PositiveSmallIntegerField()
+    
+    progress = models.PositiveIntegerField()
+    
+    class Meta:
+        unique_together = [('player', 'order')]
+        ordering = ['order']
+    

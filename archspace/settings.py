@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'missions',
     'planets', 
     'players',
+    'race',
     'technology',
 )
 

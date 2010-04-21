@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from controlmodel.models import ControlModel, Atmosphere
 from game.models import Game
+from race.models import Race
 
 from signals import power
 
@@ -12,13 +12,6 @@ CONCENTRATION_MODES = [
     ('M', 'Military'),
     ('R', 'Research'),
 ]
-
-class Race(Atmosphere, ControlModel):
-    name = models.CharField(max_length=20, unique=True)
-    description = models.TextField()
-
-    def __unicode__(self):
-        return self.name
 
 class Player(models.Model):
     user = models.OneToOneField(User)

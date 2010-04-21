@@ -1,7 +1,7 @@
 from django.db import models
 
 from players.models import Player
-from controlmodel.models import Atmosphere
+from controlmodel.models import Environment
 
 PLANET_SIZES = [
     (1, 'Tiny'),
@@ -42,10 +42,10 @@ class Planet(Environment):
     nebula = models.ForeignKey(Nebula, related_name='planets')
     
     population = models.PositiveIntegerField()
-    size = models.PositiveSmallIntegerField(choice=PLANET_SIZES)
-    resource = models.PositiveSmallIntegerField(choice=RESOURCE_TYPES)
+    size = models.PositiveSmallIntegerField(choices=PLANET_SIZES)
+    resource = models.PositiveSmallIntegerField(choices=RESOURCE_TYPES)
     
-    factories = models.PostiveIntegerField(default=0)
+    factories = models.PositiveIntegerField(default=0)
     research_labs = models.PositiveIntegerField(default=0)
     military_bases = models.PositiveIntegerField(default=0)    
     

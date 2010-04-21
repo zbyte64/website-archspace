@@ -26,8 +26,8 @@ class FleetMission(models.Model):
 class Mission(models.Model):
     type = models.CharField(choices=MISSION_TYPES, max_length=2)
     expire_turn = models.PositiveIntegerField()
-    player = models.ForiegnKey(Player, related_name='missions') #for quick look ups
-    fleets = models.ManyToManyField(through=FleetMission)
+    player = models.ForeignKey(Player, related_name='missions') #for quick look ups
+    fleets = models.ManyToManyField(Fleet, through=FleetMission)
     target = models.ForeignKey(Planet, blank=True, null=True)
     
     def expire(self):
