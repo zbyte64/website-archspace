@@ -7,16 +7,16 @@ from players.models import Player
 from signals import mission_expire
 
 MISSION_TYPES = [
-    ('SD', 'Stationed'),
-    ('EX', 'Expidition'),
-    ('RE', 'Returning'),
-    ('PA', 'Patrol'),
-    ('DI', 'Dispatched to Ally'),
-    ('TR', 'Train'),
-    ('SI', 'Siege'),
-    ('BL', 'Blockade'),
-    ('RA', 'Raid'),
-    ('PR', 'Privateer')
+    ('SD', u'Stationed'),
+    ('EX', u'Expidition'),
+    ('RE', u'Returning'),
+    ('PA', u'Patrol'),
+    ('DI', u'Dispatched to Ally'),
+    ('TR', u'Train'),
+    ('SI', u'Siege'),
+    ('BL', u'Blockade'),
+    ('RA', u'Raid'),
+    ('PR', u'Privateer')
 ]
 
 class FleetMission(models.Model):
