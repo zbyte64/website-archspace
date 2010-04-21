@@ -133,6 +133,9 @@ class Fleet(models.Model):
         except ObjectDoesNotExist:
             return None
     
+    def get_power(self):
+        raise NotImplementedError
+    
     def __unicode__(self):
         return self.name
 
@@ -140,6 +143,9 @@ class ShipDock(models.Model):
     player = models.ForeignKey(Player)
     ship_design = models.ForeignKey(ShipDesign)
     ships = models.PositiveIntegerField()
+    
+    def get_power(self):
+        raise NotImplementedError
     
     class Meta:
         unique_together = [('player', 'ship_design')]

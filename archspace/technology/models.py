@@ -29,3 +29,6 @@ class Research(models.Model):
     player = models.OneToOneField(Player)
     technology = models.ForeignKey(Technology, blank=True, null=True)
     progress = models.PositiveIntegerField()
+    
+    def get_power(self):
+        raise NotImplementedError

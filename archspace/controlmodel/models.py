@@ -12,6 +12,13 @@ class ControlModel(models.Model):
     spy = models.SmallIntegerField()
     genius = models.SmallIntegerField()
     
+    def get_control_model(self):
+        cm = dict()
+        for field in ControlModel._meta.fields:
+            key = field.name
+            cm[key] = getattr(self, key, 0)
+        return cm
+    
     class Meta:
         abstract = True
 
@@ -26,6 +33,9 @@ class Environment(models.Model):
     chlorine = models.PositiveSmallIntegerField()
     carbon_dioxide = models.PositiveSmallIntegerField()
     methane = models.PositiveSmallIntegerField()
+
+    def get_atmosphere(self):
+        raise NotImplementedError
 
     class Meta:
         abstract = True

@@ -1,3 +1,4 @@
+import math
 from django.db import models
 
 from players.models import Player
@@ -80,11 +81,14 @@ class Planet(Environment):
     def buildings(self):
         return self.factories + self.research_labs + self.military_bases 
     
+    def get_power(self):
+        return self.nagoda_points()
+    
     def get_nagoda_points(self):
         '''
         Nagoda is the raw energy the planet produces and is funelled into other products
         '''
-        control_model = self.get_control_model()
+        control_model = self.get_log_control_model()
         environment = max(self.get_environment_value(), 10)
         raw = self.population * self.resource / 2 / environment * self.buildings * control_model['efficiency'] 
         return raw
@@ -93,7 +97,7 @@ class Planet(Environment):
         raw = self.get_nagoda_points()
         
         environment = max(self.get_environment_value(), 10)
-        control_model = self.get_control_model()
+        control_model = self.get_log_control_model()
         
         growth_ratio = 1.0 - float(self.population) / self.max_population
         growth = growth_ratio * raw
@@ -125,12 +129,20 @@ class Planet(Environment):
                 'rp':rp,
                 'mp':mp,}
     
-    def get_control_model(self):
+    def get_log_control_model(self):
         '''
         Return a control model dictionary that is logorthmically balanced
         Values must be greater than 0
         '''
-        return {}
+        cm = self.get_control_model()
+        for key, value in cm.items():
+            cm[key] = math.log(max(value + 7, 2), 12)
+        return cm
+    
+    def get_control_model(self):
+        cm = self.player.get_control_model()
+        #TODO apply planet cm modifiers
+        return cm
     
     def __unicode__(self):
         return u'%s-%s' % (self.nebula, self.pk)

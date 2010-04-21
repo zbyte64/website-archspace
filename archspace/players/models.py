@@ -30,5 +30,10 @@ class Player(models.Model):
                 total += power
         return total
     
+    def get_control_model(self):
+        cm = self.race.get_control_model()
+        #TODO apply player cm modifiers
+        return cm
+    
     def __unicode__(self):
         return self.empire_name
