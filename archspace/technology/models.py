@@ -15,6 +15,8 @@ class Technology(models.Model):
     level = models.SmallPositiveIntegerField()
     description = models.TextField()
     
+    players = models.ManyToManyField(Player, through='ResearchedTechnology', related_name='technologies')
+    
     def get_research_cost(self):
         return self.level * 50000
     

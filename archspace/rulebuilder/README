@@ -1,0 +1,46 @@
+{
+    'condition':{'if'}
+    'args': ['all', 'true']
+    'conditions': [
+        [{'condition':'category'
+          'args':['default category', 'is', 'apparel']
+        }]
+    ]
+}
+
+
+condition is a stub:
+
+if statement (inherits condition)
+    Concatenation    
+        ANY     if x or y or z
+        ALL     if x and y and z
+        NONE    if not x and not y and not z
+    Evaluation
+        TRUE
+        FALSE   inverts the expression, if (x and y and z) => if (not x and not y and not z)
+    LIST of CONDITIONS
+
+regular conditions:
+    4 arguments
+    prototype (the one that implements this condition)
+    arg1, arg2, operator
+    
+condition:
+    form
+        data_to_json
+    template
+    eval(context, node) => true / false
+
+class Condition(object):
+    form = None
+    template = None
+    
+    def eval(self, context, node):
+        raise NotImplementedError
+        
+
+condition form...
+
+
+            
