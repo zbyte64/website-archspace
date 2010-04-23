@@ -4,6 +4,10 @@ from players.models import Player
 from django.db.models.signals import post_save
 
 def on_turn(player, turn, **kwargs):
+    """
+    do terraform
+    collect pp
+    """
     for planet in player.planets.all():
         pass
 
