@@ -3,15 +3,15 @@ from django.contrib.auth.models import User
 
 from game.models import Game
 from race.models import Race
+from controlmodel.models import ControlModel
 
 from signals import power
 
-CONCENTRATION_MODES = [
-    ('B', 'Balance'),
-    ('I', 'Industry'),
-    ('M', 'Military'),
-    ('R', 'Research'),
-]
+class ConcentrationMode(ControlModel):
+    name = models.CharField(max_length=20, unique=True)
+    
+    def __unicode__(self):
+        return self.name
 
 class Player(models.Model):
     user = models.OneToOneField(User)
@@ -21,7 +21,7 @@ class Player(models.Model):
     
     production_points = models.PositiveIntegerField()
     honor = models.SmallIntegerField()
-    concentration_mode = models.CharField(choices=CONCENTRATION_MODES, max_length=1)
+    concentration_mode = models.ForeignKey(ConcentrationMode)
     
     def get_power(self):
         total = 0
@@ -32,7 +32,8 @@ class Player(models.Model):
     
     def get_control_model(self):
         cm = self.race.get_control_model()
-        #TODO apply player cm modifiers
+        cm.update(self.concentration_model.get_control_model())
+        #CONSIDER signal
         return cm
     
     def __unicode__(self):

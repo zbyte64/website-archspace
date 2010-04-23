@@ -1,5 +1,7 @@
 from django.db import models
 
+from utils import MergeDict
+
 class ControlModel(models.Model):
     environment = models.SmallIntegerField(help_text='The ability to terraform')
     production = models.SmallIntegerField(help_text='The ouput of factories')
@@ -13,7 +15,7 @@ class ControlModel(models.Model):
     genius = models.SmallIntegerField()
     
     def get_control_model(self):
-        cm = dict()
+        cm = MergeDict()
         for field in ControlModel._meta.fields:
             key = field.name
             cm[key] = getattr(self, key, 0)

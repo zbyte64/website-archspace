@@ -3,7 +3,7 @@ from django.db import models
 
 from players.models import Player
 from players.language import PLAYER_LANGUAGE
-from controlmodel.models import Environment
+from controlmodel.models import Environment, ControlModel
 from rulebuilder.fields import RuleSetField
 
 PLANET_SIZES = [
@@ -26,7 +26,7 @@ ENVIRONMENTS = [
     (5, 'Hostile'),
 ]
 
-class PlanetaryAttribute(models.Model):
+class PlanetaryAttribute(ControlModel):
     name = models.CharField(max_length=20, unique=True)
     terraform_points = models.PositiveIntegerField(default=0, help_text='The amount of terraforming points needed to remove attribute, 0 = cannot remove')
     description = models.TextField()
@@ -40,6 +40,16 @@ class Nebula(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class PlanetManager(models.Manager):
+    def cumulative_points(self):
+        ret = dict()
+        for index, planet in enumerate(self.all()):
+            for key, value in planet.get_point_breakdown():
+                if index == 0:
+                    ret[key] = 0
+                ret[key] += value
+        return ret
 
 class Planet(Environment):
     player = models.ForeignKey(Player, related_name='planets')
@@ -60,6 +70,8 @@ class Planet(Environment):
     military_ratio = models.PositiveSmallIntegerField()
     
     terraform_points = models.PositiveIntegerField()
+    
+    objects = PlanetManager()
     
     def get_environment_value(self):
         delta = 0
@@ -143,8 +155,10 @@ class Planet(Environment):
         return cm
     
     def get_control_model(self):
+        #CONSIDER, some signal collector?
         cm = self.player.get_control_model()
-        #TODO apply planet cm modifiers
+        for attribute in self.attributes.all():
+            cm.update(attribute.get_control_model())
         return cm
     
     def __unicode__(self):
