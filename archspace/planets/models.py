@@ -89,6 +89,8 @@ class Planet(Environment):
     
     terraform_points = models.PositiveIntegerField(default=0)
     
+    commerce_with = models.ManyToManyField('Planet', blank=True)
+    
     objects = PlanetManager()
     
     def randomize(self):
@@ -184,6 +186,18 @@ class Planet(Environment):
                 'pp':pp,
                 'rp':rp,
                 'mp':mp,}
+    
+    def get_commerce(self):
+        total = 0
+        
+        control_model = self.get_log_control_model()
+        self_pp = self.get_point_breakdown()['pp']
+        
+        for planet in self.commerce_with.all():
+            other_pp = planet.get_point_breakdown()['pp']
+            pp = (other_pp + self_pp) / 4
+            total += pp * control_model['commerce']
+        return total
     
     def get_log_control_model(self):
         '''

@@ -12,7 +12,7 @@ def on_turn(player, turn, **kwargs):
         points = planet.get_point_breakdown()
         planet.terraform_points += points['terraform']
         planet.terraform()
-        player.production_points += planet['pp']
+        player.production_points += points['pp'] + planet.get_commerce()
         planet.save()
 
 turn.connect(on_turn)
