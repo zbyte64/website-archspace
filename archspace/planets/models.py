@@ -96,6 +96,8 @@ class Planet(Environment):
         """
         self.size = randint(1,5)
         self.resource = randint(1,3)
+        self.temperature = randint(20, 1000)
+        self.gravity = randint(0, 10)
         for key in self.get_atmosphere().keys():
             setattr(self, key, randint(0, 5))
         for attribute_count in range(randint(0, 3)):
