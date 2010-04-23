@@ -3,9 +3,10 @@ from random import randint
 from django.db import models
 
 from players.models import Player
-from players.language import PLAYER_LANGUAGE
 from controlmodel.models import Environment, ControlModel
+from controlmodel.signals import control_model
 from rulebuilder.fields import RuleSetField
+from language import PLANET_LANGUAGE
 
 PLANET_SIZES = [
     (1, 'Tiny'),
@@ -31,7 +32,7 @@ class PlanetaryAttribute(ControlModel):
     name = models.CharField(max_length=20, unique=True)
     terraform_points = models.PositiveIntegerField(default=0, help_text='The amount of terraforming points needed to remove attribute, 0 = cannot remove')
     description = models.TextField()
-    terraform_requirements = RuleSetField(language=PLAYER_LANGUAGE) #TODO should be planet_language
+    terraform_requirements = RuleSetField(language=PLANET_LANGUAGE)
     
     def __unicode__(self):
         return self.name
@@ -195,10 +196,10 @@ class Planet(Environment):
         return cm
     
     def get_control_model(self):
-        #CONSIDER, some signal collector?
         cm = self.player.get_control_model()
         for attribute in self.attributes.all():
             cm.update(attribute.get_control_model())
+        control_model.send(sender=type(self), instance=self, cm=cm)
         return cm
     
     def __unicode__(self):

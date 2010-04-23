@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from game.models import Game
 from race.models import Race
 from controlmodel.models import ControlModel
+from controlmodel.signals import control_model
 
 from signals import power
 
@@ -33,7 +34,7 @@ class Player(models.Model):
     def get_control_model(self):
         cm = self.race.get_control_model()
         cm.update(self.concentration_model.get_control_model())
-        #CONSIDER signal
+        control_model.send(sender=type(self), instance=self, cm=cm)
         return cm
     
     def __unicode__(self):
