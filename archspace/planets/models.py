@@ -93,6 +93,8 @@ class Planet(Environment):
     
     objects = PlanetManager()
     
+    ATMOSPHERE_TERRAFORM_COST = 5000
+    
     def randomize(self):
         """
         Randomly selects the size, resource, atmo, and attributes of the planet
@@ -114,7 +116,17 @@ class Planet(Environment):
                 attribute.terraform_requirements.evaluate({'player':self.player, 'planet':self})):
                 self.attributes.remove(attribute)
                 self.terraform_points -= attribute.terraform_points
-        #TODO atmosphere?
+        for key, target in self.player.race.get_atmosphere():
+            current = getattr(self, key, 0)
+            delta = target - current
+            if not delta: continue
+            change = min(abs(change), self.terraform_points/ abs(change)*self.ATMOSPHERE_TERRAFORM_COST)
+            self.terraform_points -= change * self.ATMOSPHERE_TERRAFORM_COST
+            if delta < 0:
+                setattr(self, key, target-change)
+            else:
+                setattr(self, key, target+change)
+        #TODO gravity, temperature
     
     def get_environment_value(self):
         delta = 0
