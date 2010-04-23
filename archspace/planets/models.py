@@ -2,7 +2,9 @@ import math
 from django.db import models
 
 from players.models import Player
+from players.language import PLAYER_LANGUAGE
 from controlmodel.models import Environment
+from rulebuilder.fields import RuleSetField
 
 PLANET_SIZES = [
     (1, 'Tiny'),
@@ -28,6 +30,7 @@ class PlanetaryAttribute(models.Model):
     name = models.CharField(max_length=20, unique=True)
     terraform_points = models.PositiveIntegerField(default=0, help_text='The amount of terraforming points needed to remove attribute, 0 = cannot remove')
     description = models.TextField()
+    terraform_requirements = RuleSetField(language=PLAYER_LANGUAGE)
     
     def __unicode__(self):
         return self.name

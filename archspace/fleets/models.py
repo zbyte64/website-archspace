@@ -1,7 +1,9 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
-from players.models import Player, Race
+from players.models import Player
+from players.language import PLAYER_LANGUAGE
+from rulebuilder.fields import RuleSetField
 
 WEAPON_TYPES = [
     ('B', 'Beam'),
@@ -31,6 +33,7 @@ class ShipSize(models.Model):
 
 class ShipComponent(models.Model):
     name = models.CharField(max_length=20, unique=True)
+    requirements = RuleSetField(language=PLAYER_LANGUAGE)
 
     def __unicode__(self):
         return self.name
@@ -88,8 +91,8 @@ class ShipDesign(models.Model):
 
 class CommanderAttribute(models.Model):
     name = models.CharField(max_length=20, unique=True)
-    races = models.ManyToManyField(Race)
-
+    requirements = RuleSetField(language=PLAYER_LANGUAGE)
+    
     def __unicode__(self):
         return self.name
 
