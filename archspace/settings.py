@@ -41,14 +41,15 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'django.contrib.sitemaps',
     'django.contrib.admindocs',
-    'controlmodel',
-    'fleets',
-    'game',
-    'missions',
-    'planets', 
-    'players',
-    'race',
-    'technology',
+    'archspace.controlmodel',
+    'archspace.fleets',
+    'archspace.game',
+    'archspace.missions',
+    'archspace.planets', 
+    'archspace.players',
+    'archspace.race',
+    'archspace.rulebuilder',
+    'archspace.technology',
 )
 
 ROOT_URLCONF="urls"

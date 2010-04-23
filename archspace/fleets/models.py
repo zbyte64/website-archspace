@@ -79,6 +79,9 @@ class ShipDesign(models.Model):
     weapons = models.ManyToManyField(Weapon)
     devices = models.ManyToManyField(Device, blank=True)
     
+    def get_power(self):
+        raise NotImplementedError
+    
     def __unicode__(self):
         return self.name
 
@@ -134,7 +137,7 @@ class Fleet(models.Model):
             return None
     
     def get_power(self):
-        raise NotImplementedError
+        return self.ship_design.get_power() * self.ships
     
     def __unicode__(self):
         return self.name
@@ -145,7 +148,7 @@ class ShipDock(models.Model):
     ships = models.PositiveIntegerField()
     
     def get_power(self):
-        raise NotImplementedError
+        return self.ship_design.get_power() * self.ships
     
     class Meta:
         unique_together = [('player', 'ship_design')]

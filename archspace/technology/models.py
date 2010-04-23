@@ -1,6 +1,8 @@
 from django.db import models
 
-from player.models import Player
+from players.models import Player
+from players.language import PLAYER_LANGUAGE
+from rulebuilder.fields import RuleSetField
 
 class TechnologyCategory(models.Model):
     name = models.CharField(max_length=20, unique=True)
@@ -12,8 +14,9 @@ class TechnologyCategory(models.Model):
 class Technology(models.Model):
     name = models.CharField(max_length=30, unique=True)
     category = models.ForeignKey(TechnologyCategory, related_name='technologies')
-    level = models.SmallPositiveIntegerField()
+    level = models.PositiveSmallIntegerField()
     description = models.TextField()
+    requirements = RuleSetField(language=PLAYER_LANGUAGE)
     
     players = models.ManyToManyField(Player, through='ResearchedTechnology', related_name='technologies')
     
