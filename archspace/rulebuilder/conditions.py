@@ -1,14 +1,18 @@
+from django.utils.datastructures import MergeDict
+
 from forms import IfConditionForm
 
 class Language(object):
-    def __init__(self):
-        self.operations = dict()
+    def __init__(self, *langs):
+        self._dict = dict()
+        dictionaries = [self._dict] + [lang.operations for lang in langs]
+        self.operations = MergeDict(*dictionaries)
     
     def get(self, key):
         return self.operations[key](self, key)
     
     def add(self, key, condition):
-        self.operations[key] = condition
+        self._dict[key] = condition
     
     def evaluate(self, context, node):
         if not node:

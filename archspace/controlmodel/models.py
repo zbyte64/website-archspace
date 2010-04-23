@@ -1,6 +1,6 @@
 from django.db import models
 
-from utils import MergeDict
+from utils import LayeredDict
 
 class ControlModel(models.Model):
     environment = models.SmallIntegerField(help_text='The ability to terraform')
@@ -15,7 +15,7 @@ class ControlModel(models.Model):
     genius = models.SmallIntegerField()
     
     def get_control_model(self):
-        cm = MergeDict()
+        cm = LayeredDict()
         for field in ControlModel._meta.fields:
             key = field.name
             cm[key] = getattr(self, key, 0)
@@ -37,7 +37,7 @@ class Environment(models.Model):
     methane = models.PositiveSmallIntegerField()
 
     def get_atmosphere(self):
-        atmo = MergeDict()
+        atmo = LayeredDict()
         for field in Environment._meta.fields:
             key = field.name
             if key in ('temperature', 'gavity'): continue
@@ -45,7 +45,7 @@ class Environment(models.Model):
         return atmo
 
     def get_environment(self):
-        enviro = MergeDict()
+        enviro = LayeredDict()
         for field in Environment._meta.fields:
             key = field.name
             enviro[key] = getattr(self, key, 0)

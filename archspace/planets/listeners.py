@@ -9,7 +9,11 @@ def on_turn(player, turn, **kwargs):
     collect pp
     """
     for planet in player.planets.all():
-        pass
+        points = planet.get_point_breakdown()
+        planet.terraform_points += points['terraform']
+        planet.terraform()
+        player.production_points += planet['pp']
+        planet.save()
 
 turn.connect(on_turn)
 

@@ -104,6 +104,15 @@ class Planet(Environment):
             pa = PlanetaryAttribute.objects.order_by('?')[0]
             self.attributes.add(pa)
     
+    def terraform(self):
+        for attribute in self.attributes.all():
+            if (attribute.terraform_points and
+                attribute.terraform_points <= self.terraform_points and
+                attribute.terraform_requirements.evaluate({'player':self.player, 'planet':self})):
+                self.attributes.remove(attribute)
+                self.terraform_points -= attribute.terraform_points
+        #TODO atmosphere?
+    
     def get_environment_value(self):
         delta = 0
         for key, target in self.player.race.get_atmosphere():
