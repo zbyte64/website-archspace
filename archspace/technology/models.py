@@ -23,6 +23,9 @@ class Technology(models.Model):
     def get_research_cost(self):
         return self.level * 50000
     
+    def get_power(self):
+        return self.get_research_cost()
+    
     def __unicode__(self):
         return self.name
 
@@ -30,10 +33,11 @@ class ResearchedTechnology(models.Model):
     player = models.ForeignKey(Player)
     technology = models.ForeignKey(Technology)
 
-class Research(models.Model):
+class Research(models.Model): #CONSIDER, create a research que to be more realistic
     player = models.OneToOneField(Player)
     technology = models.ForeignKey(Technology, blank=True, null=True)
     progress = models.PositiveIntegerField()
+    investment = models.PositiveIntegerField()
     
     def get_power(self):
         raise NotImplementedError

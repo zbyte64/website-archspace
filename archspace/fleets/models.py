@@ -80,7 +80,8 @@ class ShipDesign(models.Model):
     devices = models.ManyToManyField(Device, blank=True)
     
     def get_power(self):
-        raise NotImplementedError
+        #TODO factor in technology
+        return self.size.building_cost
     
     def __unicode__(self):
         return self.name
@@ -143,7 +144,7 @@ class Fleet(models.Model):
         return self.name
 
 class ShipDock(models.Model):
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, related_name='docked_ships')
     ship_design = models.ForeignKey(ShipDesign)
     ships = models.PositiveIntegerField()
     
@@ -154,7 +155,7 @@ class ShipDock(models.Model):
         unique_together = [('player', 'ship_design')]
 
 class ShipBuildQue(models.Model):
-    player = models.ForeignKey(Player, related_name='shipbuildques')
+    player = models.ForeignKey(Player, related_name='ship_build_ques')
     ship_design = models.ForeignKey(ShipDesign)
     ships = models.PositiveIntegerField()
     order = models.PositiveSmallIntegerField()
@@ -164,4 +165,8 @@ class ShipBuildQue(models.Model):
     class Meta:
         unique_together = [('player', 'order')]
         ordering = ['order']
+
+class ShipInvestment(models.Model):
+    player = models.OneToOneField(Player)
+    investment = models.PositiveIntegerField()
     

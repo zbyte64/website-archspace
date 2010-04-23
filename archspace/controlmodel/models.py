@@ -35,8 +35,19 @@ class Environment(models.Model):
     methane = models.PositiveSmallIntegerField()
 
     def get_atmosphere(self):
-        raise NotImplementedError
+        atmo = dict()
+        for field in Environment._meta.fields:
+            key = field.name
+            if key in ('temperature', 'gavity'): continue
+            atmo[key] = getattr(self, key, 0)
+        return atmo
 
     class Meta:
         abstract = True
 
+class ControlStatInfo(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    description = models.TextField()
+    
+    def __unicode__(self):
+        return self.name
