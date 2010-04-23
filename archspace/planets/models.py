@@ -1,4 +1,5 @@
 import math
+from random import randint
 from django.db import models
 
 from players.models import Player
@@ -30,7 +31,7 @@ class PlanetaryAttribute(ControlModel):
     name = models.CharField(max_length=20, unique=True)
     terraform_points = models.PositiveIntegerField(default=0, help_text='The amount of terraforming points needed to remove attribute, 0 = cannot remove')
     description = models.TextField()
-    terraform_requirements = RuleSetField(language=PLAYER_LANGUAGE)
+    terraform_requirements = RuleSetField(language=PLAYER_LANGUAGE) #TODO should be planet_language
     
     def __unicode__(self):
         return self.name
@@ -50,28 +51,56 @@ class PlanetManager(models.Manager):
                     ret[key] = 0
                 ret[key] += value
         return ret
+    
+    def discover_planet(self, player):
+        planet = Planet(player=player)
+        planet.nebula = player.planets.order_by('?')[0].nebula
+        planet.randomize()
+        planet.save()
+        return planet
+    
+    def create_home_planet(self, player):
+        assert player.planets.count() == 0, 'Player already has home planet'
+        planet = Planet(player=player)
+        planet.nebula = Nebula.objects.order_by('?')[0]
+        for key, value in player.race.get_environment():
+            setattr(planet, key, value)
+        planet.save()
+        return planet
 
 class Planet(Environment):
     player = models.ForeignKey(Player, related_name='planets')
     nebula = models.ForeignKey(Nebula, related_name='planets')
     
-    population = models.PositiveIntegerField()
-    size = models.PositiveSmallIntegerField(choices=PLANET_SIZES)
-    resource = models.PositiveSmallIntegerField(choices=RESOURCE_TYPES)
+    population = models.PositiveIntegerField(default=1000)
+    size = models.PositiveSmallIntegerField(choices=PLANET_SIZES, default=3)
+    resource = models.PositiveSmallIntegerField(choices=RESOURCE_TYPES, default=2)
     
-    factories = models.PositiveIntegerField(default=0)
-    research_labs = models.PositiveIntegerField(default=0)
-    military_bases = models.PositiveIntegerField(default=0)    
+    factories = models.PositiveIntegerField(default=10)
+    research_labs = models.PositiveIntegerField(default=10)
+    military_bases = models.PositiveIntegerField(default=10)    
     
     attributes = models.ManyToManyField(PlanetaryAttribute, blank=True)
     
-    factory_ratio = models.PositiveSmallIntegerField()
-    research_ratio = models.PositiveSmallIntegerField()
-    military_ratio = models.PositiveSmallIntegerField()
+    factory_ratio = models.PositiveSmallIntegerField(default=30)
+    research_ratio = models.PositiveSmallIntegerField(default=20)
+    military_ratio = models.PositiveSmallIntegerField(default=20)
     
-    terraform_points = models.PositiveIntegerField()
+    terraform_points = models.PositiveIntegerField(default=0)
     
     objects = PlanetManager()
+    
+    def randomize(self):
+        """
+        Randomly selects the size, resource, atmo, and attributes of the planet
+        """
+        self.size = randint(1,5)
+        self.resource = randint(1,3)
+        for key in self.get_atmosphere().keys():
+            setattr(self, key, randint(0, 5))
+        for attribute_count in range(randint(0, 3)):
+            pa = PlanetaryAttribute.objects.order_by('?')[0]
+            self.attributes.add(pa)
     
     def get_environment_value(self):
         delta = 0

@@ -37,12 +37,19 @@ class Environment(models.Model):
     methane = models.PositiveSmallIntegerField()
 
     def get_atmosphere(self):
-        atmo = dict()
+        atmo = MergeDict()
         for field in Environment._meta.fields:
             key = field.name
             if key in ('temperature', 'gavity'): continue
             atmo[key] = getattr(self, key, 0)
         return atmo
+
+    def get_environment(self):
+        enviro = MergeDict()
+        for field in Environment._meta.fields:
+            key = field.name
+            enviro[key] = getattr(self, key, 0)
+        return enviro
 
     class Meta:
         abstract = True

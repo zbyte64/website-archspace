@@ -1,5 +1,7 @@
 from game.signals import turn
 from players.signals import power
+from players.models import Player
+from django.db.models.signals import post_save
 
 def on_turn(player, turn, **kwargs):
     for planet in player.planets.all():
@@ -14,3 +16,9 @@ def on_power(player, **kwargs):
     return total_power
 
 power.connect(on_power)
+
+def create_home_planet(instance, created, **kwargs):
+    if created:
+        player.planets.create_home_planet(player)
+    
+post_save.connect(create_home_planet, sender=Player)
